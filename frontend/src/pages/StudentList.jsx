@@ -29,6 +29,7 @@ const StudentList = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState('');
   const [formData, setFormData] = useState({
     register_number: '',
     name: '',
@@ -71,6 +72,7 @@ const StudentList = () => {
   const handleOpenAddModal = () => {
     setIsEditing(false);
     setSelectedStudentId(null);
+    setFormError('');
     setFormData({
       register_number: '',
       name: '',
@@ -88,6 +90,7 @@ const StudentList = () => {
   const handleOpenEditModal = (student) => {
     setIsEditing(true);
     setSelectedStudentId(student.id);
+    setFormError('');
     setFormData({
       register_number: student.register_number,
       name: student.name,
@@ -109,26 +112,27 @@ const StudentList = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
 
     if (!formData.name.trim() || !formData.register_number.trim() || !formData.email.trim() || !formData.phone.trim()) {
-      setAlert({ type: 'danger', message: 'Name, Register Number, Email, and Phone are required.' });
+      setFormError('Name, Register Number, Email, and Phone are required.');
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      setAlert({ type: 'danger', message: 'Please provide a valid student email address.' });
+      setFormError('Please provide a valid student email address.');
       return;
     }
 
     const phoneDigits = formData.phone.replace(/\D/g, '');
     if (phoneDigits.length < 7 || phoneDigits.length > 15) {
-      setAlert({ type: 'danger', message: 'Phone number must contain between 7 and 15 digits.' });
+      setFormError('Phone number must contain between 7 and 15 digits.');
       return;
     }
 
     const cgpaNum = parseFloat(formData.cgpa);
     if (isNaN(cgpaNum) || cgpaNum < 0 || cgpaNum > 10) {
-      setAlert({ type: 'danger', message: 'CGPA must be a valid number between 0.00 and 10.00.' });
+      setFormError('CGPA must be a valid number between 0.00 and 10.00.');
       return;
     }
 
@@ -155,7 +159,7 @@ const StudentList = () => {
       setModalOpen(false);
       fetchStudents();
     } catch (err) {
-      setAlert({ type: 'danger', message: err.message || 'Failed to save student record.' });
+      setFormError(err.message || 'Failed to save student record.');
     } finally {
       setFormLoading(false);
     }
@@ -347,6 +351,19 @@ const StudentList = () => {
         >
           <form onSubmit={handleFormSubmit}>
             <div className="modal-body">
+              {formError && (
+                <div style={{
+                  padding: '12px 16px',
+                  backgroundColor: '#fef2f2',
+                  color: '#dc2626',
+                  borderRadius: '8px',
+                  fontSize: '0.88rem',
+                  marginBottom: '16px',
+                  border: '1px solid #fecaca'
+                }}>
+                  {formError}
+                </div>
+              )}
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">

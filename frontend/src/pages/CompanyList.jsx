@@ -34,6 +34,7 @@ const CompanyList = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState('');
   const [formData, setFormData] = useState({
     company_name: '',
     description: '',
@@ -78,6 +79,7 @@ const CompanyList = () => {
   const handleOpenAddModal = () => {
     setIsEditing(false);
     setSelectedCompanyId(null);
+    setFormError('');
     setFormData({
       company_name: '',
       description: '',
@@ -93,6 +95,7 @@ const CompanyList = () => {
   const handleOpenEditModal = (company) => {
     setIsEditing(true);
     setSelectedCompanyId(company.id);
+    setFormError('');
     setFormData({
       company_name: company.company_name,
       description: company.description,
@@ -126,20 +129,21 @@ const CompanyList = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
     if (!formData.company_name.trim() || !formData.location.trim() || !formData.industry.trim()) {
-      setAlert({ type: 'danger', message: 'Company Name, Location, and Industry are required.' });
+      setFormError('Company Name, Location, and Industry are required.');
       return;
     }
 
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      setAlert({ type: 'danger', message: 'Please enter a valid HR / Recruiter email address.' });
+      setFormError('Please enter a valid HR / Recruiter email address.');
       return;
     }
 
     if (formData.phone) {
       const digits = formData.phone.replace(/\D/g, '');
       if (digits.length < 7 || digits.length > 15) {
-        setAlert({ type: 'danger', message: 'Phone number must contain between 7 and 15 digits.' });
+        setFormError('Phone number must contain between 7 and 15 digits.');
         return;
       }
     }
@@ -156,7 +160,7 @@ const CompanyList = () => {
       setModalOpen(false);
       fetchCompanies();
     } catch (err) {
-      setAlert({ type: 'danger', message: err.message || 'Failed to save company details.' });
+      setFormError(err.message || 'Failed to save company details.');
     } finally {
       setFormLoading(false);
     }
@@ -477,6 +481,19 @@ const CompanyList = () => {
         >
           <form onSubmit={handleFormSubmit}>
             <div className="modal-body">
+              {formError && (
+                <div style={{
+                  padding: '12px 16px',
+                  backgroundColor: '#fef2f2',
+                  color: '#dc2626',
+                  borderRadius: '8px',
+                  fontSize: '0.88rem',
+                  marginBottom: '16px',
+                  border: '1px solid #fecaca'
+                }}>
+                  {formError}
+                </div>
+              )}
               <div className="form-group">
                 <label className="form-label">
                   Company Name <span className="required">*</span>

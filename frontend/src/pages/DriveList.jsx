@@ -37,6 +37,7 @@ const DriveList = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedDriveId, setSelectedDriveId] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState('');
   const [formData, setFormData] = useState({
     company: '',
     job_role: '',
@@ -95,6 +96,7 @@ const DriveList = () => {
   const handleOpenAddModal = () => {
     setIsEditing(false);
     setSelectedDriveId(null);
+    setFormError('');
     setFormData({
       company: companies.length > 0 ? companies[0].id : '',
       job_role: '',
@@ -113,6 +115,7 @@ const DriveList = () => {
   const handleOpenEditModal = (drive) => {
     setIsEditing(true);
     setSelectedDriveId(drive.id);
+    setFormError('');
     setFormData({
       company: drive.company,
       job_role: drive.job_role,
@@ -135,31 +138,32 @@ const DriveList = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
     if (!formData.company || !formData.job_role.trim() || !formData.package || !formData.eligibility_cgpa) {
-      setAlert({ type: 'danger', message: 'Please complete all required fields.' });
+      setFormError('Please complete all required fields.');
       return;
     }
 
     const pkgNum = parseFloat(formData.package);
     if (isNaN(pkgNum) || pkgNum <= 0) {
-      setAlert({ type: 'danger', message: 'CTC Package must be a positive number greater than 0.' });
+      setFormError('CTC Package must be a positive number greater than 0.');
       return;
     }
 
     const cgpaNum = parseFloat(formData.eligibility_cgpa);
     if (isNaN(cgpaNum) || cgpaNum < 0 || cgpaNum > 10) {
-      setAlert({ type: 'danger', message: 'Eligibility CGPA must be between 0.00 and 10.00.' });
+      setFormError('Eligibility CGPA must be between 0.00 and 10.00.');
       return;
     }
 
     const vacNum = parseInt(formData.vacancies, 10);
     if (isNaN(vacNum) || vacNum < 1) {
-      setAlert({ type: 'danger', message: 'Estimated vacancies must be at least 1.' });
+      setFormError('Estimated vacancies must be at least 1.');
       return;
     }
 
     if (formData.drive_date && formData.application_deadline && formData.application_deadline > formData.drive_date) {
-      setAlert({ type: 'danger', message: 'Application deadline cannot be after the recruitment drive date.' });
+      setFormError('Application deadline cannot be after the recruitment drive date.');
       return;
     }
 
@@ -182,7 +186,7 @@ const DriveList = () => {
       setModalOpen(false);
       fetchData();
     } catch (err) {
-      setAlert({ type: 'danger', message: err.message || 'Failed to save drive details.' });
+      setFormError(err.message || 'Failed to save drive details.');
     } finally {
       setFormLoading(false);
     }
@@ -437,6 +441,19 @@ const DriveList = () => {
         >
           <form onSubmit={handleFormSubmit}>
             <div className="modal-body">
+              {formError && (
+                <div style={{
+                  padding: '12px 16px',
+                  backgroundColor: '#fef2f2',
+                  color: '#dc2626',
+                  borderRadius: '8px',
+                  fontSize: '0.88rem',
+                  marginBottom: '16px',
+                  border: '1px solid #fecaca'
+                }}>
+                  {formError}
+                </div>
+              )}
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">

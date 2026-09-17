@@ -78,7 +78,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Auth Routes */}
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login initialRole="student" />} />
+          <Route path="/student/login" element={<Login initialRole="student" />} />
+          <Route path="/admin/login" element={<Login initialRole="admin" />} />
           <Route path="/register" element={<Register />} />
 
           {/* Root Index Redirect */}
