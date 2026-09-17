@@ -2,7 +2,7 @@
 
 A full-stack, CRUD-based **Placement Management System** developed for academic campus placement cells and undergraduate engineering students. Built with a decoupled **React.js** single-page frontend, **Django REST Framework (DRF)** backend, and a real **SQLite** relational database.
 
-#LIVE DEMO URL: https://frontend-1-kj2hs5jnq-madhu25.vercel.app/
+#LIVE DEMO URL: https://placement-management-system-hub.vercel.app
 
 ---
 
